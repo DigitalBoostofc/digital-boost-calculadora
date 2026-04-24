@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Boost — Calculadora de Plano</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      max-width: 560px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .header {
+      background: #C0392B;
+      color: #fff;
+      padding: 28px 32px 22px;
+    }
+
+    .header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .header p {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+
+    .body {
+      padding: 28px 32px;
+    }
+
+    .step {
+      margin-bottom: 22px;
+    }
+
+    .step label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .step input[type="number"],
+    .step select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      color: #222;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .step input:focus,
+    .step select:focus {
+      border-color: #C0392B;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .radio-group label {
+      font-weight: 400;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f4f4f4;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1.5px solid #ddd;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .radio-group input[type="radio"] {
+      accent-color: #C0392B;
+    }
+
+    .radio-group label:has(input:checked) {
+      border-color: #C0392B;
+      background: #fdf0ef;
+      color: #C0392B;
+      font-weight: 600;
+    }
+
+    .btn {
+      width: 100%;
+      background: #C0392B;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 13px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn:hover { background: #a93226; }
+
+    .resultado {
+      display: none;
+      margin-top: 28px;
+      border-top: 2px solid #f0f0f0;
+      padding-top: 24px;
+    }
+
+    .resultado h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 16px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      background: #f8f8f8;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .stat .label {
+      font-size: 0.75rem;
+      color: #888;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .stat .value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #222;
+    }
+
+    .plano-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+    }
+
+    .plano-starter { background: #eafaf1; color: #1e8449; }
+    .plano-pro     { background: #eaf3fb; color: #1a5276; }
+    .plano-business{ background: #fdf2e9; color: #a04000; }
+    .plano-custom  { background: #fdf0ef; color: #C0392B; }
+
+    .plano-box {
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 16px 18px;
+      border-left: 4px solid #C0392B;
+    }
+
+    .plano-box .plano-nome {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 10px;
+    }
+
+    .plano-box .linha {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .plano-box .linha strong {
+      color: #222;
+    }
+
+    .plano-box .linha.destaque {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e0e0e0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #222;
+    }
+
+    .alerta {
+      background: #fff8e1;
+      border-left: 4px solid #f39c12;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.83rem;
+      color: #7d6608;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    .footer-note {
+      font-size: 0.75rem;
+      color: #aaa;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <h1>⚡ Digital Boost</h1>
+    <p>Calculadora de Plano — uso interno comercial</p>
+  </div>
+
+  <div class="body">
+
+    <div class="step">
+      <label>Quantas pessoas entram em contato por dia em média?</label>
+      <input type="number" id="pessoas_dia" min="1" placeholder="Ex: 20" />
+    </div>
+
+    <div class="step">
+      <label>O negócio atende aos sábados?</label>
+      <div class="radio-group">
+        <label><input type="radio" name="sabado" value="sim" /> Sim</label>
+        <label><input type="radio" name="sabado" value="nao" checked /> Não</label>
+      </div>
+    </div>
+
+    <div class="step">
+      <label>Tipo de integração WhatsApp desejada?</label>
+      <div class="radio-group">
+        <label><input type="radio" name="api" value="nao_oficial" checked /> API Não Oficial</label>
+        <label><input type="radio" name="api" value="oficial" /> API Oficial (Meta)</label>
+      </div>
+    </div>
+
+    <button class="btn" onclick="calcular()">Calcular Plano Ideal</button>
+
+    <div class="resultado" id="resultado">
+      <h2>Resultado estimado</h2>
+
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="label">Dias úteis/mês</div>
+          <div class="value" id="r_dias">—</div>
+        </div>
+        <div class="stat">
+          <div class="label">Conversas/mês</div>
+          <div class="value" id="r_conversas">—</div>
+        </div>
+        <div class="stat">
+          <div class="label">Interações totais/mês</div>
+          <div class="value" id="r_interacoes">—</div>
+        </div>
+        <div class="stat">
+          <div class="label">Custo estimado IA/mês</div>
+          <div class="value" id="r_custo_token">—</div>
+        </div>
+      </div>
+
+      <div class="plano-box">
+        <div class="plano-nome" id="r_plano_nome">—</div>
+        <div class="linha"><span>Setup (taxa única)</span><strong id="r_setup">—</strong></div>
+        <div class="linha"><span>Mensalidade fixa</span><strong id="r_mensalidade">—</strong></div>
+        <div class="linha"><span>Franquia inclusa</span><strong id="r_franquia">—</strong></div>
+        <div class="linha"><span>Custo real Digital Boost/mês</span><strong id="r_custo_db">—</strong></div>
+        <div class="linha destaque"><span>Margem bruta estimada</span><strong id="r_margem">—</strong></div>
+      </div>
+
+      <div class="alerta" id="r_alerta" style="display:none"></div>
+
+      <p class="footer-note">Estimativa baseada em 10 trocas/conversa · Gemini 2.5 Pro · Câmbio R$5,00/USD</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Preços Gemini 2.5 Pro (USD por milhão de tokens)
+  const PRECO_INPUT_M  = 1.25;
+  const PRECO_OUTPUT_M = 10.00;
+  const CAMBIO         = 5.00;
+
+  // Tokens médios por interação
+  const TOKENS_INPUT_POR_INTERACAO  = 1500;
+  const TOKENS_OUTPUT_POR_INTERACAO = 350;
+
+  // Trocas por conversa
+  const TROCAS_POR_CONVERSA = 10;
+
+  // Custo API não oficial por número
+  const CUSTO_API_NAO_OFICIAL = 1.38;
+
+  const PLANOS = [
+    {
+      nome:        'Plano Starter',
+      badge:       'plano-starter',
+      mensalidade: 297,
+      setup_min:   800,
+      setup_max:   1200,
+      limite:      1300,
+      cor:         '#1e8449',
+    },
+    {
+      nome:        'Plano Pro',
+      badge:       'plano-pro',
+      mensalidade: 497,
+      setup_min:   800,
+      setup_max:   1200,
+      limite:      2600,
+      cor:         '#1a5276',
+    },
+    {
+      nome:        'Plano Business',
+      badge:       'plano-business',
+      mensalidade: 797,
+      setup_min:   1000,
+      setup_max:   1500,
+      limite:      5200,
+      cor:         '#a04000',
+    },
+  ];
+
+  function fmt(val) {
+    return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+
+  function calcular() {
+    const pessoas_dia = parseFloat(document.getElementById('pessoas_dia').value);
+    if (!pessoas_dia || pessoas_dia <= 0) {
+      alert('Informe quantas pessoas entram em contato por dia.');
+      return;
+    }
+
+    const sabado = document.querySelector('input[name="sabado"]:checked').value;
+    const api    = document.querySelector('input[name="api"]:checked').value;
+
+    // Dias úteis: sem domingo sempre. Sábado opcional.
+    const dias_uteis = sabado === 'sim' ? 26 : 22;
+
+    const conversas    = Math.round(pessoas_dia * dias_uteis);
+    const interacoes   = conversas * TROCAS_POR_CONVERSA;
+
+    // Custo de tokens em USD
+    const custo_input_usd  = (interacoes * TOKENS_INPUT_POR_INTERACAO / 1_000_000) * PRECO_INPUT_M;
+    const custo_output_usd = (interacoes * TOKENS_OUTPUT_POR_INTERACAO / 1_000_000) * PRECO_OUTPUT_M;
+    const custo_token_brl  = (custo_input_usd + custo_output_usd) * CAMBIO;
+
+    // Custo API
+    const custo_api = api === 'nao_oficial' ? CUSTO_API_NAO_OFICIAL : 0;
+
+    const custo_total = custo_token_brl + custo_api;
+
+    // Selecionar plano pelo limite de interações
+    let plano = PLANOS[PLANOS.length - 1]; // default: Business
+    for (const p of PLANOS) {
+      if (interacoes <= p.limite) { plano = p; break; }
+    }
+
+    const margem     = plano.mensalidade - custo_total;
+    const margem_pct = ((margem / plano.mensalidade) * 100).toFixed(1);
+    const setup_str  = `${fmt(plano.setup_min)} – ${fmt(plano.setup_max)}`;
+
+    // Exibir resultados
+    document.getElementById('r_dias').textContent        = `${dias_uteis} dias`;
+    document.getElementById('r_conversas').textContent   = conversas.toLocaleString('pt-BR');
+    document.getElementById('r_interacoes').textContent  = interacoes.toLocaleString('pt-BR');
+    document.getElementById('r_custo_token').textContent = fmt(custo_token_brl);
+
+    document.getElementById('r_plano_nome').textContent  = plano.nome;
+    document.getElementById('r_setup').textContent       = setup_str;
+    document.getElementById('r_mensalidade').textContent = fmt(plano.mensalidade) + '/mês';
+    document.getElementById('r_franquia').textContent    = `${plano.limite.toLocaleString('pt-BR')} interações/mês`;
+    document.getElementById('r_custo_db').textContent    = fmt(custo_total);
+    document.getElementById('r_margem').textContent      = `${fmt(margem)} (${margem_pct}%)`;
+
+    // Alerta de volume acima do Business
+    const alertaEl = document.getElementById('r_alerta');
+    if (interacoes > PLANOS[PLANOS.length - 1].limite) {
+      alertaEl.style.display = 'block';
+      alertaEl.innerHTML = `⚠️ <strong>Volume acima do Plano Business.</strong> Recomendado negociar plano customizado com mensalidade a partir de ${fmt(plano.mensalidade + 200)}/mês ou cobrar excedente de R$ 0,05/interação adicional.`;
+    } else {
+      alertaEl.style.display = 'none';
+    }
+
+    document.getElementById('resultado').style.display = 'block';
+  }
+</script>
+</body>
+</html>
